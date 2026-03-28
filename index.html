@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OG Creator — meuweb.site</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── TOKENS ─────────────────────────────────────────────── */
+    :root {
+      --accent: #a3e635;
+      --accent-dim: #6b9921;
+      --radius: 10px;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Syne', sans-serif;
+      --ticker-speed: 70s;
+    }
+    [data-theme="dark"] {
+      --bg: #0d0d0d;
+      --bg2: #161616;
+      --bg3: #1f1f1f;
+      --border: #2a2a2a;
+      --text: #f0f0f0;
+      --text-dim: #6b6b6b;
+      --text-mid: #a0a0a0;
+      --shadow: 0 8px 40px rgba(0,0,0,.6);
+      --ticker-bg: #a3e635;
+      --ticker-text: #0d0d0d;
+      --code-bg: #0a0a0a;
+      --code-border: #2a2a2a;
+    }
+    [data-theme="light"] {
+      --bg: #f7f6f2;
+      --bg2: #ffffff;
+      --bg3: #eeece6;
+      --border: #d8d5cc;
+      --text: #141414;
+      --text-dim: #a0a09a;
+      --text-mid: #555550;
+      --shadow: 0 8px 40px rgba(0,0,0,.1);
+      --ticker-bg: #141414;
+      --ticker-text: #a3e635;
+      --code-bg: #f0ede6;
+      --code-border: #d0cdc5;
+    }
+
+    /* ── RESET ──────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .35s, color .35s;
+      overflow-x: hidden;
+    }
+
+    /* ── TICKER ─────────────────────────────────────────────── */
+    .ticker-wrap {
+      background: var(--ticker-bg);
+      color: var(--ticker-text);
+      overflow: hidden;
+      white-space: nowrap;
+      padding: 10px 0;
+      position: relative;
+      z-index: 10;
+      transition: background .35s;
+    }
+    .ticker-track {
+      display: inline-block;
+      animation: ticker var(--ticker-speed) linear infinite;
+    }
+    .ticker-track span {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      padding: 0 28px;
+    }
+    .ticker-track span::after {
+      content: '◆';
+      margin-left: 28px;
+      opacity: .5;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── HEADER ─────────────────────────────────────────────── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 9;
+      transition: background .35s, border-color .35s;
+    }
+    .logo {
+      font-family: var(--display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-badge {
+      background: var(--accent);
+      color: #0d0d0d;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .site-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: .05em;
+    }
+    .theme-btn {
+      width: 40px; height: 22px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      cursor: pointer;
+      position: relative;
+      transition: background .3s, border-color .3s;
+      padding: 0;
+    }
+    .theme-btn::after {
+      content: '';
+      width: 16px; height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: transform .3s;
+    }
+    [data-theme="light"] .theme-btn::after { transform: translateX(18px); }
+
+    /* ── HERO ───────────────────────────────────────────────── */
+    .hero {
+      padding: 64px 32px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; left: 50%;
+      transform: translateX(-50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(163,230,53,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp .6s .1s forwards;
+    }
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(36px, 6vw, 72px);
+      font-weight: 800;
+      letter-spacing: -.04em;
+      line-height: 1.0;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp .6s .2s forwards;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: var(--text-mid);
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.6;
+      opacity: 0;
+      animation: fadeUp .6s .3s forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── MAIN LAYOUT ────────────────────────────────────────── */
+    .container {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0 clamp(16px, 2vw, 28px) 80px;
+      display: grid;
+      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .container > * {
+      min-width: 0;
+    }
+    @media (max-width: 760px) {
+      .container { grid-template-columns: 1fr; padding: 0 16px 60px; }
+      header { padding: 16px 20px; }
+      .hero { padding: 48px 20px 36px; }
+    }
+
+    /* ── FORM CARD ──────────────────────────────────────────── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      transition: background .35s, border-color .35s;
+      min-width: 0;
+    }
+    .card-title {
+      font-family: var(--display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    /* ── FORM ───────────────────────────────────────────────── */
+    .section-divider {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin: 20px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-mid);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      -webkit-appearance: none;
+    }
+    .field textarea { resize: vertical; min-height: 68px; line-height: 1.5; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(163,230,53,.15);
+    }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .hint {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 4px;
+      font-family: var(--mono);
+    }
+    select option { background: var(--bg2); }
+
+    /* ── BUTTONS ────────────────────────────────────────────── */
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--accent);
+      color: #0d0d0d;
+      border: none;
+      border-radius: var(--radius);
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: transform .15s, box-shadow .15s, opacity .15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,.15);
+      opacity: 0;
+      transition: opacity .15s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(163,230,53,.3); }
+    .btn-primary:hover::after { opacity: 1; }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── OUTPUT ─────────────────────────────────────────────── */
+    .output-card {
+      position: sticky;
+      top: 80px;
+      min-width: 0;
+    }
+    .output-block {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: var(--radius);
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--text-mid);
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      min-height: 120px;
+      max-width: 100%;
+      transition: background .35s, border-color .35s;
+    }
+    .output-block .tag-name  { color: #79b8ff; }
+    .output-block .attr-name { color: #ffab70; }
+    .output-block .attr-val  { color: #9ecbff; }
+    .output-block .comment   { color: #4a4f58; font-style: italic; }
+    [data-theme="light"] .output-block .tag-name  { color: #0550ae; }
+    [data-theme="light"] .output-block .attr-name { color: #953800; }
+    [data-theme="light"] .output-block .attr-val  { color: #0a3069; }
+    [data-theme="light"] .output-block .comment   { color: #aaa; }
+
+    .copy-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .btn-copy {
+      flex: 1;
+      min-width: 160px;
+      padding: 9px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-mid);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      cursor: pointer;
+      transition: background .2s, color .2s, border-color .2s;
+    }
+    .btn-copy:hover { background: var(--accent); color: #0d0d0d; border-color: var(--accent); }
+    .btn-copy.copied {
+      background: var(--accent);
+      color: #0d0d0d;
+      border-color: var(--accent);
+    }
+
+    /* ── PREVIEW CARD ───────────────────────────────────────── */
+    .preview-wrap {
+      margin-top: 16px;
+      min-width: 0;
+    }
+    .preview-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--bg3);
+      transition: background .35s, border-color .35s;
+      min-width: 0;
+    }
+    .preview-img-placeholder {
+      width: 100%;
+      height: 140px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      transition: background .35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .preview-img-placeholder img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+    .preview-img-placeholder.has-img img { display: block; }
+    .preview-img-placeholder.has-img .placeholder-text { display: none; }
+    .placeholder-text {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      opacity: .5;
+    }
+    .preview-meta { padding: 12px 14px; }
+    .preview-domain { font-size: 11px; color: var(--text-dim); font-family: var(--mono); margin-bottom: 4px; }
+    .preview-title { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; margin-bottom: 4px; }
+    .preview-desc  { font-size: 12px; color: var(--text-mid); line-height: 1.4;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+    /* ── STATS ──────────────────────────────────────────────── */
+    .char-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .char-stat {
+      flex: 1;
+      min-width: 140px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      transition: background .35s, border-color .35s;
+    }
+    .char-stat strong { display: block; font-size: 16px; color: var(--text); margin-bottom: 2px; }
+    .char-stat.warn strong { color: #f97316; }
+    .char-stat.ok   strong { color: var(--accent); }
+
+    /* ── FOOTER ─────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px 16px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      transition: border-color .35s;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* ── FLOATING PARTICLES ─────────────────────────────────── */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      animation: float linear infinite;
+    }
+    @keyframes float {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: .6; }
+      90%  { opacity: .2; }
+      100% { transform: translateY(-20px) scale(1); opacity: 0; }
+    }
+
+    /* ── GENERATED NOTICE ───────────────────────────────────── */
+    .generated-notice {
+      text-align: center;
+      padding: 12px;
+      background: rgba(163,230,53,.08);
+      border: 1px solid rgba(163,230,53,.2);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      margin-top: 12px;
+      display: none;
+      animation: fadeUp .4s forwards;
+    }
+    .generated-notice.show { display: block; }
+
+    @media (max-width: 980px) {
+      .container {
+        grid-template-columns: minmax(0, 1fr);
+      }
+      .output-card {
+        position: static;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .card {
+        padding: 20px;
+      }
+      .field-row {
+        grid-template-columns: 1fr;
+      }
+      .copy-row > * {
+        min-width: 100%;
+      }
+      .char-stat {
+        min-width: 100%;
+      }
+      footer {
+        padding: 18px 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Ticker -->
+<div class="ticker-wrap">
+  <div class="ticker-track" id="ticker-track"></div>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    OG Creator
+    <span class="logo-badge">Tool</span>
+  </div>
+  <div class="header-right">
+    <span class="site-tag">meuweb.site</span>
+    <button class="theme-btn" id="theme-btn" title="Alternar tema" aria-label="Alternar entre modo claro e escuro"></button>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <p class="hero-eyebrow">meuweb.site — Ferramentas</p>
+  <h1>Gerador de<br><em>Open Graph</em></h1>
+  <p class="hero-sub">Crie as meta tags OG e Twitter Card ideais para seus projetos. Pré-configurado para meuweb.site.</p>
+</div>
+
+<!-- Main -->
+<div class="container">
+
+  <!-- Formulário -->
+  <div class="card" style="animation: fadeUp .5s .35s both;">
+    <div class="card-title">Configurar Meta Tags</div>
+
+    <div class="section-divider">Informações Gerais</div>
+
+    <div class="field">
+      <label>Slug do projeto (subdomínio)</label>
+      <input type="text" id="slug" placeholder="domluanbarbearia" value="">
+      <p class="hint">Ex: domluanbarbearia → https://domluanbarbearia.meuweb.site/</p>
+    </div>
+
+    <div class="field">
+      <label>URL base (gerada automaticamente)</label>
+      <input type="text" id="url" placeholder="https://domluanbarbearia.meuweb.site/" readonly style="opacity:.6; cursor:not-allowed;">
+    </div>
+
+    <div class="field">
+      <label>OG Type</label>
+      <select id="og-type">
+        <option value="website" selected>website</option>
+        <option value="article">article</option>
+        <option value="profile">profile</option>
+        <option value="product">product</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Locale</label>
+      <select id="locale">
+        <option value="pt_BR" selected>pt_BR — Português (Brasil)</option>
+        <option value="pt_PT">pt_PT — Português (Portugal)</option>
+        <option value="en_US">en_US — English (US)</option>
+        <option value="es_ES">es_ES — Español</option>
+      </select>
+    </div>
+
+    <div class="section-divider">Conteúdo</div>
+
+    <div class="field">
+      <label>Site Name</label>
+      <input type="text" id="site-name" placeholder="UP Pets" maxlength="60">
+    </div>
+
+    <div class="field">
+      <label>Título <span id="title-count" style="float:right; color: var(--accent);">0/60</span></label>
+      <input type="text" id="title" placeholder="Up Pets - Serviços de banho e tosa..." maxlength="90">
+    </div>
+
+    <div class="field">
+      <label>Descrição <span id="desc-count" style="float:right; color: var(--accent);">0/155</span></label>
+      <textarea id="description" placeholder="Serviços de banho e tosa, acessórios para seu pet e tele-busca..." maxlength="200"></textarea>
+    </div>
+
+    <div class="section-divider">Imagem OG</div>
+
+    <div class="field">
+      <label>Caminho da imagem</label>
+      <input type="text" id="img-path" placeholder="assets/images/og-image.png" value="assets/images/og-image.png">
+      <p class="hint">Relativo à raiz do projeto. Versão: <input type="text" id="img-version" placeholder="2" value="2" style="width:48px; display:inline; padding:2px 6px; font-size:11px; border-radius:4px;"></p>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Largura</label>
+        <input type="number" id="img-w" value="1200">
+      </div>
+      <div class="field">
+        <label>Altura</label>
+        <input type="number" id="img-h" value="630">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Alt da imagem</label>
+      <input type="text" id="img-alt" placeholder="Logo da UP Pets">
+    </div>
+
+    <button class="btn-primary" id="generate-btn" onclick="generate()">
+      ⚡ Gerar Meta Tags
+    </button>
+  </div>
+
+  <!-- Output -->
+  <div class="output-card" style="animation: fadeUp .5s .5s both;">
+    <div class="card">
+      <div class="card-title">Resultado</div>
+
+      <div id="output-block" class="output-block"><span style="color:var(--text-dim); font-style:italic;">// Preencha o formulário e clique em Gerar...</span></div>
+
+      <div class="copy-row">
+        <button class="btn-copy" id="copy-all-btn" onclick="copyAll()">⎘ Copiar Tudo</button>
+        <button class="btn-copy" id="copy-og-btn" onclick="copyOG()">Copiar OG</button>
+        <button class="btn-copy" id="copy-tw-btn" onclick="copyTwitter()">Copiar Twitter</button>
+      </div>
+
+      <div class="generated-notice" id="generated-notice">
+        ✓ Tags geradas com sucesso — prontas para colar no &lt;head&gt;
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-wrap">
+      <div class="card">
+        <div class="card-title">Preview WhatsApp / Discord</div>
+        <div class="preview-card">
+          <div class="preview-img-placeholder" id="preview-img">
+            <div class="placeholder-text">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>
+              <span>1200 × 630</span>
+            </div>
+            <img id="preview-img-tag" src="" alt="">
+          </div>
+          <div class="preview-meta">
+            <div class="preview-domain" id="prev-domain">meuweb.site</div>
+            <div class="preview-title" id="prev-title">Título do site aparece aqui</div>
+            <div class="preview-desc"  id="prev-desc">A descrição do site aparecerá aqui, limitada a duas linhas para simular o comportamento dos cartões no WhatsApp e Discord.</div>
+          </div>
+        </div>
+
+        <!-- Char stats -->
+        <div class="char-stats" id="char-stats" style="display:none;">
+          <div class="char-stat" id="stat-title">
+            <strong id="stat-title-num">0</strong>
+            Título chars
+          </div>
+          <div class="char-stat" id="stat-desc">
+            <strong id="stat-desc-num">0</strong>
+            Desc chars
+          </div>
+          <div class="char-stat" id="stat-img">
+            <strong id="stat-img-txt">✓</strong>
+            Imagem 1200×630
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <span>OG Creator — meuweb.site</span>
+  <span>by <a href="https://meuweb.site" target="_blank">meuweb.site</a></span>
+</footer>
+
+<script>
+  // ── PARTICLES ─────────────────────────────────────────────
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.cssText = `
+      left: ${Math.random()*100}%;
+      animation-duration: ${8 + Math.random()*14}s;
+      animation-delay: ${Math.random()*-20}s;
+      width: ${1 + Math.random()*3}px;
+      height: ${1 + Math.random()*3}px;
+    `;
+    container.appendChild(p);
+  }
+
+  // ── TICKER ────────────────────────────────────────────────
+  const items = [
+    'Open Graph', 'Twitter Card', 'Meta Tags', 'WhatsApp Preview',
+    'Discord Embed', 'SEO', 'og:image', 'og:title', 'og:description',
+    'meuweb.site', 'summary_large_image', '1200×630', 'og:locale pt_BR',
+    'og:type website', 'og:site_name'
+  ];
+  const text = items.join(' ');
+  const track = document.getElementById('ticker-track');
+  // duplicate for seamless loop
+  track.innerHTML = `<span>${text}</span>`.repeat(8);
+
+  // ── THEME ─────────────────────────────────────────────────
+  const html = document.documentElement;
+  document.getElementById('theme-btn').addEventListener('click', () => {
+    html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+  });
+
+  // ── SLUG → URL auto-fill ──────────────────────────────────
+  const slugInput  = document.getElementById('slug');
+  const urlInput   = document.getElementById('url');
+  slugInput.addEventListener('input', () => {
+    const s = slugInput.value.trim().toLowerCase().replace(/[^a-z0-9-]/g,'');
+    slugInput.value = s;
+    urlInput.value = s ? `https://${s}.meuweb.site/` : '';
+    livePreview();
+  });
+
+  // ── CHAR COUNTERS ─────────────────────────────────────────
+  const titleEl = document.getElementById('title');
+  const descEl  = document.getElementById('description');
+  titleEl.addEventListener('input', () => {
+    document.getElementById('title-count').textContent = `${titleEl.value.length}/60`;
+    livePreview();
+  });
+  descEl.addEventListener('input', () => {
+    document.getElementById('desc-count').textContent = `${descEl.value.length}/155`;
+    livePreview();
+  });
+  document.getElementById('site-name').addEventListener('input', livePreview);
+  document.getElementById('img-path').addEventListener('input', livePreview);
+  document.getElementById('img-version').addEventListener('input', livePreview);
+  document.getElementById('img-alt').addEventListener('input', livePreview);
+  document.getElementById('img-w').addEventListener('input', livePreview);
+  document.getElementById('img-h').addEventListener('input', livePreview);
+
+  // ── LIVE PREVIEW ──────────────────────────────────────────
+  function livePreview() {
+    const slug   = slugInput.value.trim();
+    const title  = titleEl.value.trim();
+    const desc   = descEl.value.trim();
+    const imgPath = document.getElementById('img-path').value.trim();
+    const imgVer  = document.getElementById('img-version').value.trim();
+    const imgUrl  = slug && imgPath
+      ? `https://${slug}.meuweb.site/${imgPath}${imgVer ? '?v='+imgVer : ''}`
+      : '';
+
+    document.getElementById('prev-domain').textContent =
+      slug ? `${slug}.meuweb.site` : 'meuweb.site';
+    document.getElementById('prev-title').textContent =
+      title || 'Título do site aparece aqui';
+    document.getElementById('prev-desc').textContent =
+      desc  || 'A descrição aparecerá aqui...';
+
+    // image preview
+    const prevImg = document.getElementById('preview-img');
+    const imgTag  = document.getElementById('preview-img-tag');
+    if (imgUrl) {
+      imgTag.src = imgUrl;
+      imgTag.onload = () => prevImg.classList.add('has-img');
+      imgTag.onerror = () => prevImg.classList.remove('has-img');
+    } else {
+      prevImg.classList.remove('has-img');
+      imgTag.src = '';
+    }
+
+    // char stats
+    const tLen = title.length;
+    const dLen = desc.length;
+    const w    = parseInt(document.getElementById('img-w').value) || 0;
+    const h    = parseInt(document.getElementById('img-h').value) || 0;
+    if (tLen || dLen) {
+      document.getElementById('char-stats').style.display = 'flex';
+      const stT = document.getElementById('stat-title');
+      document.getElementById('stat-title-num').textContent = tLen;
+      stT.className = 'char-stat ' + (tLen > 60 ? 'warn' : 'ok');
+      const stD = document.getElementById('stat-desc');
+      document.getElementById('stat-desc-num').textContent = dLen;
+      stD.className = 'char-stat ' + (dLen > 155 ? 'warn' : 'ok');
+      const stI = document.getElementById('stat-img');
+      document.getElementById('stat-img-txt').textContent = (w===1200&&h===630) ? '✓' : '⚠';
+      stI.className = 'char-stat ' + ((w===1200&&h===630) ? 'ok' : 'warn');
+    }
+  }
+
+  // ── GENERATE ──────────────────────────────────────────────
+  let lastOG = ''; let lastTW = '';
+
+  function generate() {
+    const slug    = slugInput.value.trim();
+    const urlBase = slug ? `https://${slug}.meuweb.site/` : document.getElementById('url').value.trim();
+    const title   = titleEl.value.trim();
+    const desc    = descEl.value.trim();
+    const siteName= document.getElementById('site-name').value.trim();
+    const locale  = document.getElementById('locale').value;
+    const ogType  = document.getElementById('og-type').value;
+    const imgPath = document.getElementById('img-path').value.trim();
+    const imgVer  = document.getElementById('img-version').value.trim();
+    const imgUrl  = slug && imgPath
+      ? `https://${slug}.meuweb.site/${imgPath}${imgVer ? '?v='+imgVer : ''}`
+      : (imgPath ? `https://meuweb.site/${imgPath}` : '');
+    const imgW    = document.getElementById('img-w').value || '1200';
+    const imgH    = document.getElementById('img-h').value || '630';
+    const imgAlt  = document.getElementById('img-alt').value.trim();
+    const domain  = slug ? `${slug}.meuweb.site` : 'meuweb.site';
+
+    lastOG =
+`  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:type" content="${ogType}">
+  <meta property="og:url" content="${urlBase}">
+  <meta property="og:title" content="${title}">
+  <meta property="og:description" content="${desc}">
+  <meta property="og:site_name" content="${siteName}">
+  <meta property="og:locale" content="${locale}">
+  <meta property="og:image" content="${imgUrl}">
+  <meta property="og:image:width" content="${imgW}">
+  <meta property="og:image:height" content="${imgH}">
+  <meta property="og:image:alt" content="${imgAlt}">`;
+
+    lastTW =
+`  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="twitter:domain" content="${domain}">
+  <meta property="twitter:url" content="${urlBase}">
+  <meta name="twitter:title" content="${title}">
+  <meta name="twitter:description" content="${desc}">
+  <meta name="twitter:image" content="${imgUrl}">
+  <meta name="twitter:image:alt" content="${imgAlt}">`;
+
+    const full = lastOG + '\n\n' + lastTW;
+    renderHighlighted(full);
+
+    document.getElementById('generated-notice').classList.add('show');
+    setTimeout(() => document.getElementById('generated-notice').classList.remove('show'), 3500);
+
+    livePreview();
+    document.getElementById('char-stats').style.display = 'flex';
+  }
+
+  function renderHighlighted(code) {
+    const escaped = code
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    const highlighted = escaped
+      .replace(/(\/\/[^\n]*)/g, '<span class="comment">$1</span>')
+      .replace(/&lt;(\/?)(\w[\w:-]*)/g, '&lt;<span class="tag-name">$2</span>')
+      .replace(/\s([\w:-]+)=/g, ' <span class="attr-name">$1</span>=')
+      .replace(/&quot;([^&]*)&quot;/g, '&quot;<span class="attr-val">$1</span>&quot;')
+      .replace(/="([^"]*)"/g, '="<span class="attr-val">$1</span>"');
+
+    document.getElementById('output-block').innerHTML = highlighted;
+  }
+
+  // ── COPY ──────────────────────────────────────────────────
+  function copyText(text, btnId) {
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById(btnId);
+      btn.classList.add('copied');
+      btn.textContent = '✓ Copiado!';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.textContent = btnId === 'copy-all-btn' ? '⎘ Copiar Tudo'
+          : btnId === 'copy-og-btn' ? 'Copiar OG' : 'Copiar Twitter';
+      }, 2000);
+    });
+  }
+  function copyAll()     { copyText(lastOG + '\n\n' + lastTW, 'copy-all-btn'); }
+  function copyOG()      { copyText(lastOG, 'copy-og-btn'); }
+  function copyTwitter() { copyText(lastTW, 'copy-tw-btn'); }
+
+  // ── ENTER TO GENERATE ─────────────────────────────────────
+  document.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' && el.tagName !== 'TEXTAREA') generate(); });
+  });
+</script>
+</body>
+</html>
