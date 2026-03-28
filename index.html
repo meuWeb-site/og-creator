@@ -207,20 +207,36 @@
 
     /* ── MAIN LAYOUT ────────────────────────────────────────── */
     .container {
-      width: 100%;
-      max-width: none;
-      margin: 0;
-      padding: 0 clamp(16px, 2vw, 28px) 80px;
+      width: min(80vw, 1360px);
+      margin: 0 auto;
+      padding: 0 0 80px;
       display: grid;
-      grid-template-columns: minmax(320px, 420px) minmax(0, 1fr);
+      grid-template-columns: minmax(320px, 400px) minmax(0, 1fr);
       gap: 24px;
       align-items: start;
+      transition: width .35s ease, grid-template-columns .35s ease, gap .35s ease;
     }
     .container > * {
       min-width: 0;
     }
+    .container.generated {
+      width: min(80vw, 1120px);
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+    .container.generated .output-card {
+      order: 1;
+      position: static;
+    }
+    .container.generated .form-card {
+      order: 2;
+    }
     @media (max-width: 760px) {
-      .container { grid-template-columns: 1fr; padding: 0 16px 60px; }
+      .container {
+        width: calc(100vw - 32px);
+        grid-template-columns: 1fr;
+        padding: 0 0 60px;
+      }
       header { padding: 16px 20px; }
       .hero { padding: 48px 20px 36px; }
     }
@@ -345,6 +361,7 @@
       position: sticky;
       top: 80px;
       min-width: 0;
+      transition: transform .35s ease;
     }
     .output-block {
       background: var(--code-bg);
@@ -529,6 +546,7 @@
 
     @media (max-width: 980px) {
       .container {
+        width: min(88vw, 980px);
         grid-template-columns: minmax(0, 1fr);
       }
       .output-card {
@@ -585,10 +603,10 @@
 </div>
 
 <!-- Main -->
-<div class="container">
+<div class="container" id="main-layout">
 
   <!-- Formulário -->
-  <div class="card" style="animation: fadeUp .5s .35s both;">
+  <div class="card form-card" style="animation: fadeUp .5s .35s both;">
     <div class="card-title">Configurar Meta Tags</div>
 
     <div class="section-divider">Informações Gerais</div>
@@ -763,6 +781,7 @@
 
   // ── THEME ─────────────────────────────────────────────────
   const html = document.documentElement;
+  const mainLayout = document.getElementById('main-layout');
   document.getElementById('theme-btn').addEventListener('click', () => {
     html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
   });
@@ -890,6 +909,7 @@
 
     const full = lastOG + '\n\n' + lastTW;
     renderHighlighted(full);
+    mainLayout.classList.add('generated');
 
     document.getElementById('generated-notice').classList.add('show');
     setTimeout(() => document.getElementById('generated-notice').classList.remove('show'), 3500);
