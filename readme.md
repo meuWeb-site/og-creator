@@ -2,7 +2,7 @@
 
 
 :minidisc: OG Creator Tool
-v1.0 
+v1.0 Favicon e OG
 
 
  -->
